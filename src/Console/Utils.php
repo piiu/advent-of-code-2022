@@ -27,9 +27,13 @@ class Utils
     {
         $day = str_pad($dayNumber, 2, '0', STR_PAD_LEFT);
         $class = "AdventOfCode\Days\Day$day";
-        if (class_exists($class)) {
-            return new $class();
+        if (!class_exists($class)) {
+            return null;
         }
-        return null;
+        $inputFile = __DIR__ . '\..\..\input\day' . $day;
+        if (!file_exists($inputFile)) {
+            return null;
+        }
+        return new $class(file_get_contents($inputFile));
     }
 }
