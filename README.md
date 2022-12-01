@@ -6,8 +6,8 @@
 ### Installation 
 `docker-compose run composer`
 
-#### Run 
+### Run 
 `docker-compose run day [day_number]`
 
-#### Issues 
+### Issues 
 None so far
