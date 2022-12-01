@@ -1,7 +1,6 @@
 version: "3.3"
 
 services:
-
     day:
       image: php:8.1.0-cli
       working_dir: /app
@@ -9,7 +8,7 @@ services:
       volumes:
         - .:/app
 
-    composer:
+    install:
       image: composer:2.4
       command: install
       volumes:

@@ -4,7 +4,7 @@
 - Docker
 
 ### Installation 
-`docker-compose run composer`
+`docker-compose run install`
 
 ### Run 
 `docker-compose run day [day_number]`

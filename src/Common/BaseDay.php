@@ -20,10 +20,12 @@ abstract class BaseDay
 
     public function results()
     {
+        $time = microtime();
         $this->execute();
         Utils::outputArray([
             'Part 1: ' . $this->part1,
-            'Part 2: ' . $this->part2
+            'Part 2: ' . $this->part2,
+            'Total runtime: ' . round(microtime() - $time, 6) . 'ms'
         ]);
     }
 
