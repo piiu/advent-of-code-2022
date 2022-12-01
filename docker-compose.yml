@@ -1,0 +1,16 @@
+version: "3.3"
+
+services:
+
+    day:
+      image: php:8.1.0-cli
+      working_dir: /app
+      entrypoint: ["php", "src/Console/day.php"]
+      volumes:
+        - .:/app
+
+    composer:
+      image: composer:2.4
+      command: install
+      volumes:
+        - .:/app

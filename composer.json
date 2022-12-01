@@ -1,0 +1,17 @@
+{
+    "name": "piiu/advent-of-code-2022",
+    "autoload": {
+        "psr-4": {
+            "AdventOfCode\\": "src/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@php -r \"file_exists('config/app.ini') || copy('config/app.ini.example', 'config/app.ini');\""
+        ]
+    },
+    "require": {
+        "php": "8.1.*"
+    },
+    "minimum-stability": "dev"
+}
