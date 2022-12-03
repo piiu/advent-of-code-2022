@@ -22,43 +22,28 @@ class Day02 extends BaseDay
 
     private function getOpponentMove(string $opponentMoveCode) : Move
     {
-        switch ($opponentMoveCode) {
-            case "A":
-                return new Rock();
-            case "B":
-                return new Paper();
-            case "C":
-                return new Scissors();
-            default:
-                throw new \Exception('Invalid move');
-        }
+        return match ($opponentMoveCode) {
+            "A" => new Rock(),
+            "B" => new Paper(),
+            "C" => new Scissors()
+        };
     }
 
     private function getMyMovePart1(string $myMoveCode) : Move
     {
-        switch ($myMoveCode) {
-            case "X":
-                return new Rock();
-            case "Y":
-                return new Paper();
-            case "Z":
-                return new Scissors();
-            default:
-                throw new \Exception('Invalid move');
-        }
+        return match ($myMoveCode) {
+            "X" => new Rock(),
+            "Y" => new Paper(),
+            "Z" => new Scissors()
+        };
     }
 
-    private function getMyMovePart2(string $myMoveCode, Move $opponentMove) :Move
+    private function getMyMovePart2(string $myMoveCode, Move $opponentMove) : Move
     {
-        switch ($myMoveCode) {
-            case "X":
-                return new $opponentMove->winsAgainst;
-            case "Y":
-                return new $opponentMove;
-            case "Z":
-                return new $opponentMove->losesAgainst;
-            default:
-                throw new \Exception('Invalid move');
-        }
+        return match ($myMoveCode) {
+            "X" => new $opponentMove->winsAgainst,
+            "Y" => new $opponentMove,
+            "Z" => new $opponentMove->losesAgainst
+        };
     }
 }

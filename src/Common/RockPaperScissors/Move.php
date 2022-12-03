@@ -13,13 +13,10 @@ abstract class Move {
 
     function getScoreAgainst(Move $move) : int
     {
-        switch (get_class($move)) {
-            case $this->winsAgainst:
-                return $this->score + self::WIN;
-            case $this->losesAgainst:
-                return $this->score + self::LOSE;
-            default:
-                return $this->score + self::DRAW;
-        }
+        return match (get_class($move)) {
+            $this->winsAgainst => $this->score + self::WIN,
+            $this->losesAgainst => $this->score + self::LOSE,
+            default => $this->score + self::DRAW,
+        };
     }
 }
