@@ -12,19 +12,12 @@ class Day02 extends BaseDay
 {
     public function execute()
     {
-        $rounds = $this->getInputArray();
-
-        $totalScore1 = 0;
-        $totalScore2 = 0;
-        foreach ($rounds as $round) {
+        foreach ($this->getInputArray() as $round) {
             [$opponentMoveCode, $myMoveCode] =  explode(' ', $round);
             $opponentMove = $this->getOpponentMove($opponentMoveCode);
-            $totalScore1 += $this->getMyMovePart1($myMoveCode)->getScoreAgainst($opponentMove);
-            $totalScore2 += $this->getMyMovePart2($myMoveCode, $opponentMove)->getScoreAgainst($opponentMove);
+            $this->part1 += $this->getMyMovePart1($myMoveCode)->getScoreAgainst($opponentMove);
+            $this->part2 += $this->getMyMovePart2($myMoveCode, $opponentMove)->getScoreAgainst($opponentMove);
         }
-
-        $this->part1 = $totalScore1;
-        $this->part2 = $totalScore2;
     }
 
     private function getOpponentMove(string $opponentMoveCode) : Move
