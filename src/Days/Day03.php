@@ -3,7 +3,6 @@
 namespace AdventOfCode\Days;
 
 use AdventOfCode\Common\BaseDay;
-use AdventOfCode\Console\Utils;
 
 class Day03 extends BaseDay
 {
