@@ -29,7 +29,7 @@ class Day02 extends BaseDay
 
     private function getOpponentMove(string $opponentMoveCode) : Move
     {
-        switch (trim($opponentMoveCode)) {
+        switch ($opponentMoveCode) {
             case "A":
                 return new Rock();
             case "B":
@@ -43,7 +43,7 @@ class Day02 extends BaseDay
 
     private function getMyMovePart1(string $myMoveCode) : Move
     {
-        switch (trim($myMoveCode)) {
+        switch ($myMoveCode) {
             case "X":
                 return new Rock();
             case "Y":
@@ -57,7 +57,7 @@ class Day02 extends BaseDay
 
     private function getMyMovePart2(string $myMoveCode, Move $opponentMove) :Move
     {
-        switch (trim($myMoveCode)) {
+        switch ($myMoveCode) {
             case "X":
                 return new $opponentMove->winsAgainst;
             case "Y":

@@ -8,8 +8,8 @@ use AdventOfCode\Console\Utils;
 abstract class BaseDay
 {
     private string $input;
-    protected string $part1;
-    protected string $part2;
+    protected string $part1 = '0';
+    protected string $part2 = '0';
 
     public function __construct($input)
     {
@@ -29,7 +29,7 @@ abstract class BaseDay
 
     protected function getInputArray(string $delimiter = PHP_EOL) : array
     {
-        return explode($delimiter, $this->input);
+        return array_map('trim', explode($delimiter, $this->input));
     }
 
     protected function getInputMap() : Map
