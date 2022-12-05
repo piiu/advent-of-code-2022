@@ -1,0 +1,46 @@
+<?php
+
+namespace AdventOfCode\Days;
+
+use AdventOfCode\Common\BaseDay;
+
+class Day05 extends BaseDay
+{
+    const EMPTY = 'X';
+
+    public function execute()
+    {
+        [$rawCrane, $moves] = $this->getInputArray("\n\r\n", false);
+        $crane1 = $this->getCrane($rawCrane);
+        $crane2 = $this->getCrane($rawCrane);
+
+        foreach (explode("\n", $moves) as $move) {
+            preg_match('/move (?<count>\d+) from (?<from>\d+) to (?<to>\d+)/', $move, $matches);
+            $crane2Picks = [];
+            for ($i = 0; $i < $matches['count']; $i++) {
+                $crane1[$matches["to"]][] = array_pop($crane1[$matches['from']]);
+                $crane2Picks[] = array_pop($crane2[$matches['from']]);
+            }
+            $crane2[$matches["to"]] = array_merge($crane2[$matches["to"]], array_reverse($crane2Picks));
+        }
+
+        $this->part1 = join('', array_map('array_pop', $crane1));
+        $this->part2 = join('', array_map('array_pop', $crane2));
+    }
+
+    private function getCrane(string $rawCrane) : array
+    {
+        $rawCrane = array_reverse(explode("\n", $rawCrane));
+        $crane = array_fill_keys(str_split(trim(str_replace(' ', '', array_shift($rawCrane)))), []);
+        foreach ($rawCrane as $row) {
+            $row = str_split($row);
+            foreach ($crane as $stack => $content) {
+                $index = -3 + 4 * $stack;
+                if (!empty($row[$index]) && $row[$index] !== ' ') {
+                    $crane[$stack][] = $row[$index];
+                }
+            }
+        }
+        return $crane;
+    }
+}
