@@ -35,6 +35,11 @@ abstract class BaseDay
         return explode($delimiter, $this->input);
     }
 
+    protected function getInputSignal() : array
+    {
+        return str_split(trim($this->input));
+    }
+
     protected function getInputMap() : Map
     {
         $map = array_map(function ($row) {
