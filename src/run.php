@@ -12,7 +12,7 @@ if (!$day = Utils::getDayNumberFromArgument()) {
     Utils::output('Please input day number!');
     return;
 }
-if (!is_numeric($day) || !$class = Utils::getClassByDayNumber($day, Utils::getIsExampleFromArgument())) {
+if (!is_numeric($day) || !$class = Utils::getClassByDayNumber($day)) {
     Utils::output('Invalid day value!');
     return;
 }

@@ -20,22 +20,18 @@ class Utils
 
     public static function getDayNumberFromArgument() : ?int
     {
-        return $_SERVER['argv'][1] ?? null;
+        $options = getopt("d:");
+        return array_pop($options) ?? null;
     }
 
-    public static function getIsExampleFromArgument() : bool
-    {
-        return !empty($_SERVER['argv'][2]) && $_SERVER['argv'][2] === 'e';
-    }
-
-    public static function getClassByDayNumber(int $dayNumber, bool $isExample) : ?BaseDay
+    public static function getClassByDayNumber(int $dayNumber) : ?BaseDay
     {
         $day = str_pad($dayNumber, 2, '0', STR_PAD_LEFT);
-        $nameSpace = "AdventOfCode\Days\Day$day";
-        if (!class_exists($class = "$nameSpace\Solution")) {
+        $class = "AdventOfCode\Days\Day$day\Solution";
+        if (!class_exists($class)) {
             return null;
         }
-        $inputFile = __DIR__ . "\..\..\Days\Day$day\\" . ($isExample ? 'example' : 'input');
+        $inputFile = __DIR__ . "\..\..\Days\Day$day\input";
         if (!file_exists($inputFile)) {
             return null;
         }

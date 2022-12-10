@@ -1,6 +1,6 @@
 <?php
 
-namespace AdventOfCode\Days\Day02;
+namespace AdventOfCode\Days\Day01;
 
 use AdventOfCode\Common\BaseDay;
 
