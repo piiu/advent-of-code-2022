@@ -10,7 +10,7 @@ class Solution extends BaseDay
     public function execute()
     {
         $x = 1;
-        $cycle = 0;
+        $cycle = 1;
         $line = '';
 
         foreach ($this->getInputArray() as $instruction) {
@@ -23,15 +23,15 @@ class Solution extends BaseDay
             }
 
             for ($i = 0; $i < $cyclesToRun; $i++) {
-                $line .= abs($cycle % 40 - $x) <= 1 ? '#' : ' ';
+                $line .= abs(($cycle - 1) % 40 - $x) <= 1 ? '#' : ' ';
                 if (strlen($line) === 40) {
                     Utils::output($line);
                     $line = '';
                 }
-                $cycle++;
-                if (in_array($cycle, [20, 60, 100, 140, 180, 220])) {
+                if ($cycle % 40 === 20) {
                     $this->part1 += $cycle * $x;
                 }
+                $cycle++;
             }
             $x += $value;
         }
