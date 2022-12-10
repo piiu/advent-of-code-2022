@@ -36,7 +36,6 @@ class Utils
             return null;
         }
         $inputFile = __DIR__ . "\..\..\Days\Day$day\\" . ($isExample ? 'example' : 'input');
-        var_dump($inputFile);
         if (!file_exists($inputFile)) {
             return null;
         }
