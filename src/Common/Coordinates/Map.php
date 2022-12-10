@@ -2,7 +2,7 @@
 
 namespace AdventOfCode\Common\Coordinates;
 
-use AdventOfCode\Console\Utils;
+use AdventOfCode\Common\Console\Utils;
 
 class Map
 {

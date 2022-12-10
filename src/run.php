@@ -1,8 +1,10 @@
 <?php
 
-namespace AdventOfCode\Console;
+namespace AdventOfCode;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+use AdventOfCode\Common\Console\Utils;
+
+require_once __DIR__ . '/../vendor/autoload.php';
 
 $time = microtime(true);
 
@@ -10,7 +12,7 @@ if (!$day = Utils::getDayNumberFromArgument()) {
     Utils::output('Please input day number!');
     return;
 }
-if (!is_numeric($day) || !$class = Utils::getClassByDayNumber($day)) {
+if (!is_numeric($day) || !$class = Utils::getClassByDayNumber($day, Utils::getIsExampleFromArgument())) {
     Utils::output('Invalid day value!');
     return;
 }

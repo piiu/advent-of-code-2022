@@ -4,7 +4,7 @@ services:
     day:
       image: php:8.1.0-cli
       working_dir: /app
-      entrypoint: ["php", "src/Console/day.php"]
+      entrypoint: ["php", "src/run.php"]
       volumes:
         - .:/app
 

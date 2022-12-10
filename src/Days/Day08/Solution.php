@@ -1,11 +1,11 @@
 <?php
 
-namespace AdventOfCode\Days;
+namespace AdventOfCode\Days\Day08;
 
 use AdventOfCode\Common\BaseDay;
 use AdventOfCode\Common\Coordinates\Location;
 
-class Day08 extends BaseDay
+class Solution extends BaseDay
 {
     public function execute()
     {

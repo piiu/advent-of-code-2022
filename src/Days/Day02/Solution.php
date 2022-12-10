@@ -1,14 +1,14 @@
 <?php
 
-namespace AdventOfCode\Days;
+namespace AdventOfCode\Days\Day02;
 
 use AdventOfCode\Common\BaseDay;
-use AdventOfCode\Common\RockPaperScissors\Move;
-use AdventOfCode\Common\RockPaperScissors\Paper;
-use AdventOfCode\Common\RockPaperScissors\Rock;
-use AdventOfCode\Common\RockPaperScissors\Scissors;
+use AdventOfCode\Days\Day02\RockPaperScissors\Move;
+use AdventOfCode\Days\Day02\RockPaperScissors\Paper;
+use AdventOfCode\Days\Day02\RockPaperScissors\Rock;
+use AdventOfCode\Days\Day02\RockPaperScissors\Scissors;
 
-class Day02 extends BaseDay
+class Solution extends BaseDay
 {
     public function execute()
     {

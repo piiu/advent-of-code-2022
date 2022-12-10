@@ -2,8 +2,8 @@
 
 namespace AdventOfCode\Common;
 
+use AdventOfCode\Common\Console\Utils;
 use AdventOfCode\Common\Coordinates\Map;
-use AdventOfCode\Console\Utils;
 
 abstract class BaseDay
 {

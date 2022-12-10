@@ -7,20 +7,19 @@ class Location
     public int $x;
     public int $y;
 
-    const UP = 1;
-    const DOWN = 2;
-    const LEFT = 3;
-    const RIGHT = 4;
+    const UP = 'U';
+    const DOWN = 'D';
+    const LEFT = 'L';
+    const RIGHT = 'R';
 
     const ALL_DIRECTIONS = [self::UP, self::RIGHT, self::DOWN, self::LEFT];
 
     public function __construct(int $x = 0, int $y = 0)
     {
-        $this->x = $x;
-        $this->y = $y;
+        $this->set($x, $y);
     }
 
-    public function move(int $direction, int $amount = 1) : self
+    public function move(string $direction, int $amount = 1) : self
     {
         if ($direction === self::UP) {
             $this->y -= $amount;
@@ -37,8 +36,18 @@ class Location
         return $this;
     }
 
+    public function set(int $x, int $y)
+    {
+        $this->x = $x;
+        $this->y = $y;
+    }
+
     public function isEqual(self $location) : bool
     {
         return $this->x === $location->x && $this->y === $location->y;
+    }
+
+    public function getString() : string{
+        return $this->x . '-' . $this->y;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace AdventOfCode\Console;
+namespace AdventOfCode\Common\Console;
 
 use AdventOfCode\Common\BaseDay;
 
@@ -23,14 +23,20 @@ class Utils
         return $_SERVER['argv'][1] ?? null;
     }
 
-    public static function getClassByDayNumber(int $dayNumber) : ?BaseDay
+    public static function getIsExampleFromArgument() : bool
+    {
+        return !empty($_SERVER['argv'][2]) && $_SERVER['argv'][2] === 'e';
+    }
+
+    public static function getClassByDayNumber(int $dayNumber, bool $isExample) : ?BaseDay
     {
         $day = str_pad($dayNumber, 2, '0', STR_PAD_LEFT);
-        $class = "AdventOfCode\Days\Day$day";
-        if (!class_exists($class)) {
+        $nameSpace = "AdventOfCode\Days\Day$day";
+        if (!class_exists($class = "$nameSpace\Solution")) {
             return null;
         }
-        $inputFile = __DIR__ . '\..\..\input\day' . $day;
+        $inputFile = __DIR__ . "\..\..\Days\Day$day\\" . ($isExample ? 'example' : 'input');
+        var_dump($inputFile);
         if (!file_exists($inputFile)) {
             return null;
         }

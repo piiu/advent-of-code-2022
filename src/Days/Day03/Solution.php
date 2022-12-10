@@ -1,10 +1,10 @@
 <?php
 
-namespace AdventOfCode\Days;
+namespace AdventOfCode\Days\Day03;
 
 use AdventOfCode\Common\BaseDay;
 
-class Day03 extends BaseDay
+class Solution extends BaseDay
 {
     public function execute()
     {

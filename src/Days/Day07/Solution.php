@@ -1,10 +1,10 @@
 <?php
 
-namespace AdventOfCode\Days;
+namespace AdventOfCode\Days\Day07;
 
 use AdventOfCode\Common\BaseDay;
 
-class Day07 extends BaseDay
+class Solution extends BaseDay
 {
     private array $fileStructure = [];
     private array $directorySizes = [];

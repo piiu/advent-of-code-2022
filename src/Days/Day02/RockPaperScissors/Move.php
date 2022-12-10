@@ -1,6 +1,6 @@
 <?php
 
-namespace AdventOfCode\Common\RockPaperScissors;
+namespace AdventOfCode\Days\Day02\RockPaperScissors;
 
 abstract class Move {
     const WIN = 6;

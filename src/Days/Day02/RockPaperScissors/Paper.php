@@ -1,6 +1,6 @@
 <?php
 
-namespace AdventOfCode\Common\RockPaperScissors;
+namespace AdventOfCode\Days\Day02\RockPaperScissors;
 
 class Paper extends Move
 {
