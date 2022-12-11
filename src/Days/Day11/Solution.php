@@ -17,9 +17,23 @@ class Solution extends BaseDay
             }
         }
         $this->part1 = $this->getMonkeyBusinessLevel($monkeys);
+
+//        $monkeys = $this->getMonkeys();
+//        for ($i = 0; $i < 10000; $i++) {
+//            foreach ($monkeys as $monkey) {
+//                while ($item = $monkey->inspect(false)) {
+//                    $monkey->throw($item);
+//                }
+//            }
+//        }
+//        $this->part2 = $this->getMonkeyBusinessLevel($monkeys);
     }
 
-    private function getMonkeys() {
+    /**
+     * @return Monkey[]
+     */
+    private function getMonkeys() : array
+    {
         $monkeys = [];
         $regex = '/Monkey (?<id>\d+):\s*Starting items: (?<items>.*)\s*Operation: new = (?<operation>.*)\s*Test: divisible by (?<divisible>.*)\s*If true: throw to monkey (?<true>.*)\s*If false: throw to monkey (?<false>.*)/';
         foreach ($this->getInputArray("\n\r\n") as $rawMonkey) {
