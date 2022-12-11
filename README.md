@@ -7,5 +7,5 @@
 #### Installation ####
 `composer install`
 
-#### Run all days ####
+#### Run ####
 `composer day [number]`
