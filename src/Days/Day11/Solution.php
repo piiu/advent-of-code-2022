@@ -8,25 +8,25 @@ class Solution extends BaseDay
 {
     public function execute()
     {
+        $this->part1 = $this->solve(20);
+        $this->part2 = $this->solve(10000, false);
+    }
+
+    private function solve(int $cycles, bool $divideByThree = true) : int
+    {
         $monkeys = $this->getMonkeys();
-        for ($i = 0; $i < 20; $i++) {
+        $commonProduct = array_product(array_map(function($monkey) {
+            return $monkey->divisibleTest;
+        }, $monkeys));
+
+        for ($i = 0; $i < $cycles; $i++) {
             foreach ($monkeys as $monkey) {
-                while ($item = $monkey->inspect()) {
-                    $monkey->throw($item);
+                while ($item = $monkey->inspect($divideByThree)) {
+                    $monkey->throw($item, $commonProduct);
                 }
             }
         }
-        $this->part1 = $this->getMonkeyBusinessLevel($monkeys);
-
-//        $monkeys = $this->getMonkeys();
-//        for ($i = 0; $i < 10000; $i++) {
-//            foreach ($monkeys as $monkey) {
-//                while ($item = $monkey->inspect(false)) {
-//                    $monkey->throw($item);
-//                }
-//            }
-//        }
-//        $this->part2 = $this->getMonkeyBusinessLevel($monkeys);
+        return $this->getMonkeyBusinessLevel($monkeys);
     }
 
     /**
@@ -39,6 +39,7 @@ class Solution extends BaseDay
         foreach ($this->getInputArray("\n\r\n") as $rawMonkey) {
             preg_match($regex, $rawMonkey, $matches);
             $monkeys[$matches['id']] = new Monkey(
+                $matches['id'],
                 explode(', ', $matches['items']),
                 $matches['operation'],
                 $matches['divisible'],
@@ -48,8 +49,8 @@ class Solution extends BaseDay
         }
 
         foreach ($monkeys as $monkey) {
-            $monkey->setTrueToMonkey($monkeys[$monkey->getTrueTo()]);
-            $monkey->setFalseToMonkey($monkeys[$monkey->getFalseTo()]);
+            $monkey->trueToMonkey = $monkeys[$monkey->trueTo];
+            $monkey->falseToMonkey =$monkeys[$monkey->falseTo];
         }
 
         return $monkeys;
@@ -58,7 +59,7 @@ class Solution extends BaseDay
     private function getMonkeyBusinessLevel(array $monkeys) : int
     {
         $inspectionCounts = array_map(function(Monkey $monkey) {
-            return $monkey->getInspectionCount();
+            return $monkey->inspectionCount;
         }, $monkeys);
         rsort($inspectionCounts);
 

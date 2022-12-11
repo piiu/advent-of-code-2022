@@ -18,4 +18,4 @@ if (!is_numeric($day) || !$class = Utils::getClassByDayNumber($day)) {
 }
 
 $class->results();
-Utils::output('Total runtime: ' . round(microtime(true) - $time, 2) . 'ms');
+Utils::output('Total runtime: ' . round(microtime(true) - $time, 2) . 's');
