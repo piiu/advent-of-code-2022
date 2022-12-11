@@ -21,7 +21,7 @@ class Solution extends BaseDay
 
         for ($i = 0; $i < $cycles; $i++) {
             foreach ($monkeys as $monkey) {
-                while ($item = $monkey->inspect($divideByThree)) {
+                while ($item = $monkey->inspectNext($divideByThree)) {
                     $newMonkey = $monkeys[$monkey->getThrowTo($item)];
                     $newMonkey->addItem($item % $commonProduct);
                 }

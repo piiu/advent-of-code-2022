@@ -25,7 +25,7 @@ class Monkey
         $this->items[] = $item;
     }
 
-    public function inspect($divideByThree) : ?int
+    public function inspectNext($divideByThree) : ?int
     {
         if (empty($this->items)) {
             return null;
