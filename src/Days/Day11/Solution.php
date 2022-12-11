@@ -22,7 +22,8 @@ class Solution extends BaseDay
         for ($i = 0; $i < $cycles; $i++) {
             foreach ($monkeys as $monkey) {
                 while ($item = $monkey->inspect($divideByThree)) {
-                    $monkey->throw($item, $commonProduct);
+                    $newMonkey = $monkeys[$monkey->getThrowTo($item)];
+                    $newMonkey->addItem($item % $commonProduct);
                 }
             }
         }
@@ -39,18 +40,12 @@ class Solution extends BaseDay
         foreach ($this->getInputArray("\n\r\n") as $rawMonkey) {
             preg_match($regex, $rawMonkey, $matches);
             $monkeys[$matches['id']] = new Monkey(
-                $matches['id'],
                 explode(', ', $matches['items']),
                 $matches['operation'],
                 $matches['divisible'],
                 $matches['true'],
                 $matches['false']
             );
-        }
-
-        foreach ($monkeys as $monkey) {
-            $monkey->trueToMonkey = $monkeys[$monkey->trueTo];
-            $monkey->falseToMonkey =$monkeys[$monkey->falseTo];
         }
 
         return $monkeys;
