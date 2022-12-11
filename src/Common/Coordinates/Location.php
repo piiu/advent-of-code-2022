@@ -16,7 +16,8 @@ class Location
 
     public function __construct(int $x = 0, int $y = 0)
     {
-        $this->set($x, $y);
+        $this->x = $x;
+        $this->y = $y;
     }
 
     public function move(string $direction, int $amount = 1) : self
@@ -36,18 +37,8 @@ class Location
         return $this;
     }
 
-    public function set(int $x, int $y)
-    {
-        $this->x = $x;
-        $this->y = $y;
-    }
-
     public function isEqual(self $location) : bool
     {
         return $this->x === $location->x && $this->y === $location->y;
-    }
-
-    public function getString() : string{
-        return $this->x . '-' . $this->y;
     }
 }

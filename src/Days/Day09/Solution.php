@@ -14,8 +14,8 @@ class Solution extends BaseDay
         foreach ($this->getInputArray() as $move) {
             [$direction, $amount] = explode(' ', $move);
             for ($i = 0; $i < $amount; $i++) {
-                $rope1->move($direction);
-                $rope2->move($direction);
+                $rope1->move([$direction]);
+                $rope2->move([$direction]);
             }
         }
         $this->part1 = count(array_unique($rope1->getTailHistory()));

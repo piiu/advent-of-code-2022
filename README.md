@@ -9,6 +9,3 @@ Composer
 
 #### Run all days ####
 `composer day [number]`
-
-### Issues
-- Day 9 does not work with real input
