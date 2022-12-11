@@ -17,6 +17,5 @@ if (!is_numeric($day) || !$class = Utils::getClassByDayNumber($day)) {
     return;
 }
 
-
 $class->results();
 Utils::output('Total runtime: ' . round(microtime(true) - $time, 2) . 'ms');
