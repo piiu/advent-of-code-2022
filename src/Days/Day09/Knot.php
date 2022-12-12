@@ -14,7 +14,7 @@ class Knot
     {
         $this->nextKnot = $nextKnot;
         $this->location = new Location();
-        $this->writeHistory();
+        $this->history[] = $this->location->getAsString();
     }
 
     public function move(array $directions)
@@ -22,7 +22,7 @@ class Knot
         foreach ($directions as $direction) {
             $this->location->move($direction);
         }
-        $this->writeHistory();
+        $this->history[] = $this->location->getAsString();
 
         if (!$this->nextKnot) {
             return;
@@ -40,11 +40,6 @@ class Knot
             }
             $this->nextKnot->move($directions);
         }
-    }
-
-    public function writeHistory()
-    {
-        $this->history[] = $this->location->x . '|' . $this->location->y;
     }
 
     public function getLastKnotHistory() : array

@@ -12,7 +12,7 @@ class Location
     const LEFT = 'L';
     const RIGHT = 'R';
 
-    const ALL_DIRECTIONS = [self::UP, self::RIGHT, self::DOWN, self::LEFT];
+    const ALL_DIRECTIONS = [self::DOWN, self::LEFT, self::UP, self::RIGHT];
 
     public function __construct(int $x = 0, int $y = 0)
     {
@@ -40,5 +40,10 @@ class Location
     public function isEqual(self $location) : bool
     {
         return $this->x === $location->x && $this->y === $location->y;
+    }
+
+    public function getAsString() : string
+    {
+        return $this->x . '|' . $this->y;
     }
 }

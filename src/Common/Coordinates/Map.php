@@ -63,4 +63,16 @@ class Map
             return $row[$x];
         }, $this->map);
     }
+
+    public function findLocationOfValue(string $target) : ?Location
+    {
+        foreach ($this->map as $y => $row) {
+            foreach ($row as $x => $value) {
+                if ($value === $target) {
+                    return new Location($x, $y);
+                }
+            }
+        }
+        return null;
+    }
 }
