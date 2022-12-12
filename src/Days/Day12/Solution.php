@@ -10,6 +10,7 @@ class Solution extends BaseDay
 {
     private Map $map;
     private array $shortestTrips = [];
+    private array $finalHistory;
 
     public function execute()
     {
@@ -21,6 +22,12 @@ class Solution extends BaseDay
         $this->map->setValue($destinationLocation, 'z');
 
         $this->find($destinationLocation, $currentLocation);
+
+        foreach ($this->finalHistory as $entry) {
+            [$x, $y] = explode('|', $entry);
+            $this->map->setValue(new Location($x, $y), '+');
+        }
+        $this->map->draw(); // Part 2 can be found on here if you're smart about it
     }
 
     private function find(Location $currentLocation, Location $destinationLocation, array $history = [])
@@ -35,6 +42,7 @@ class Solution extends BaseDay
 
         if ($currentLocation->isEqual($destinationLocation)) {
             $this->part1 = $currentSteps;
+            $this->finalHistory = $history;
             return;
         }
 

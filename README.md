@@ -4,8 +4,11 @@
 - PHP 8.1
 - Composer
 
-#### Installation ####
+#### Installation 
 `composer install`
 
-#### Run ####
+#### Run 
 `composer day [number]`
+
+### Issues
+- Day 12 could use some heavy optimisation and automated solution to part 2
