@@ -11,4 +11,4 @@
 `composer day [number]`
 
 ### Issues
-- Day 12 could use some heavy optimisation and automated solution to part 2
+- Day 12 could use some heavy optimisation and an automated solution for part 2
