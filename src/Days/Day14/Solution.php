@@ -15,50 +15,41 @@ class Solution extends BaseDay
     public function execute()
     {
         $map = new Map();
-
         $lowestRock = 0;
+        $startingLocation = new Location(500, 0);
+        $possibilities = [[Location::DOWN], [Location::DOWN, Location::LEFT], [Location::DOWN, Location::RIGHT]];
+
         foreach ($this->getInputArray() as $row) {
-            $points = explode(' -> ' , $row);
             $previousLocation = null;
-            foreach ($points as $point) {
+            foreach (explode(' -> ', $row) as $point) {
                 [$x, $y] = explode(',', $point);
                 $location = new Location($x, $y);
                 if ($previousLocation) {
                     $map->setValueInLine($previousLocation, $location, self::ROCK);
                 }
-                $lowestRock = (int)max($lowestRock, $y);
                 $previousLocation = $location;
+                $lowestRock = (int)max($lowestRock, $y);
             }
         }
 
-        $startingLocation = new Location(500, 0);
-        $possibilities = [[Location::DOWN], [Location::DOWN, Location::LEFT], [Location::DOWN, Location::RIGHT]];
-        $count = 0;
-        while (true) {
-            $sand = clone $startingLocation;
-            while (true) {
-                $move = false;
+        do {
+            $sandLocation = clone $startingLocation;
+            do {
                 foreach ($possibilities as $possibility) {
-                    $potentialLocation = (clone $sand)->moveMultiple($possibility);
-                    if (empty($map->getValue($potentialLocation)) && $potentialLocation->y < $lowestRock + 2) {
+                    $potentialLocation = (clone $sandLocation)->moveMultiple($possibility);
+                    $canMove = empty($map->getValue($potentialLocation)) && $potentialLocation->y < $lowestRock + 2;
+                    if ($canMove) {
                         if ($potentialLocation->y === $lowestRock && empty($this->part1)) {
-                            $this->part1 = $count;
+                            $this->part1 = $this->part2;
                         }
-                        $move = true;
-                        $sand = $potentialLocation;
+                        $sandLocation = $potentialLocation;
                         break;
                     }
                 }
-                if (!$move) {
-                    if ($sand->isEqual($startingLocation)) {
-                        $this->part2 = $count + 1;
-                        break 2;
-                    }
+            } while ($canMove);
 
-                    $map->setValue($sand, self::SAND);
-                    break;
-                }
-            }
-            $count++;
-        }}
+            $map->setValue($sandLocation, self::SAND);
+            $this->part2++;
+        } while (!$sandLocation->isEqual($startingLocation));
+    }
 }
