@@ -75,4 +75,13 @@ class Map
         }
         return null;
     }
+
+    public function setValueInLine(Location $location1, Location $location2, string $lineMarker)
+    {
+        foreach (range($location1->y, $location2->y) as $y) {
+            foreach (range($location1->x, $location2->x) as $x) {
+                $this->setValue(new Location($x, $y), $lineMarker);
+            }
+        }
+    }
 }

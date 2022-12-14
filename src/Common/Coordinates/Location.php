@@ -37,6 +37,14 @@ class Location
         return $this;
     }
 
+    public function moveMultiple(array $directions) : self
+    {
+        foreach ($directions as $direction) {
+            $this->move($direction);
+        }
+        return $this;
+    }
+
     public function isEqual(self $location) : bool
     {
         return $this->x === $location->x && $this->y === $location->y;
