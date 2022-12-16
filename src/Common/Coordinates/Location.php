@@ -50,8 +50,13 @@ class Location
         return $this->x === $location->x && $this->y === $location->y;
     }
 
-    public function getAsString() : string
+    public function toString() : string
     {
         return $this->x . '|' . $this->y;
+    }
+
+    public function getManhattanDistanceFrom(self $location) : int
+    {
+        return abs($location->x - $this->x) + abs($location->y - $this->y);
     }
 }

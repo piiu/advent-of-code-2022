@@ -34,7 +34,7 @@ class Solution extends BaseDay
     {
         $currentSteps = count($history);
         $currentValue = $this->map->getValue($currentLocation);
-        $locationString = $currentLocation->getAsString();
+        $locationString = $currentLocation->toString();
 
         if ((!empty($this->part1) && $currentSteps > $this->part1) || in_array($locationString, $history)) {
             return;
