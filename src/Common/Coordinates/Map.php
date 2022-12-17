@@ -84,4 +84,9 @@ class Map
             }
         }
     }
+
+    public function ksort()
+    {
+        ksort($this->map);
+    }
 }
