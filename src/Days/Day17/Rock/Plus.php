@@ -4,7 +4,7 @@ namespace AdventOfCode\Days\Day17\Rock;
 
 use AdventOfCode\Common\Coordinates\Location;
 
-class Cross extends Rock
+class Plus extends Rock
 {
     protected string $nextRockClass = Angle::class;
 

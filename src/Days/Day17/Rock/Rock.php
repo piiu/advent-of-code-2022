@@ -13,13 +13,14 @@ abstract class Rock
     protected array $locations;
     protected string $nextRockClass;
 
-    abstract function __construct(Location $start);
-
-    public function canMove(Map $map, string $direction) : bool
+    public function canMove(Map $map, string $direction, Location $exception = null) : bool
     {
         foreach ($this->locations as $location) {
             $newLocation = (clone $location)->move($direction);
-            if ($newLocation->x < 0 || $newLocation->x > 6 || $map->getValue($newLocation)) {
+            if ($newLocation->x < 0 || $newLocation->x > 6
+                || $map->getValue($newLocation)
+                || ($exception && $newLocation->isEqual($exception))
+            ) {
                 return false;
             }
         }
@@ -38,10 +39,17 @@ abstract class Rock
         foreach ($this->locations as $location) {
             $map->setValue($location, self::RESTING);
         }
+        $map->ksort();
     }
 
     public function getNextRockClass(): string
     {
         return $this->nextRockClass;
+    }
+
+    public function getName() : string
+    {
+        $parts = explode('\\', get_class($this));
+        return end($parts);
     }
 }
