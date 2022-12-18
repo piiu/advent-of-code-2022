@@ -11,7 +11,7 @@ class Solution extends BaseDay
     const LAVA = '#';
 
     private Map3D $map;
-    private array $knownBubbles = [];
+    private array $knownOutSide = [];
     private array $bounds = Location::MAX_BOUNDS;
 
     public function execute()
@@ -22,15 +22,17 @@ class Solution extends BaseDay
         foreach ($this->getInputArray() as $row) {
             [$x, $y, $z] = explode(',', $row);
             $this->bounds = [
-                'minX' => min($this->bounds['minX'], $x),
-                'maxX' => max($this->bounds['maxX'], $x),
-                'minY' => min($this->bounds['minY'], $y),
-                'maxY' => max($this->bounds['maxY'], $y),
-                'minZ' => min($this->bounds['minZ'], $z),
-                'maxZ' => max($this->bounds['maxZ'], $z),
+                'minX' => min($this->bounds['minX'], $x - 1),
+                'maxX' => max($this->bounds['maxX'], $x + 1),
+                'minY' => min($this->bounds['minY'], $y - 1),
+                'maxY' => max($this->bounds['maxY'], $y + 1),
+                'minZ' => min($this->bounds['minZ'], $z - 1),
+                'maxZ' => max($this->bounds['maxZ'], $z + 1),
             ];
             $this->map->setValue(new Location($x, $y, $z), self::LAVA);
         }
+
+        $this->mapOutside(new Location($this->bounds['minX'], $this->bounds['minY'], $this->bounds['minZ']));
 
         foreach ($this->map->getMaps() as $z => $layer) {
             foreach ($layer->getMap() as $y => $row) {
@@ -39,7 +41,7 @@ class Solution extends BaseDay
                         $neighbour = (new Location($x, $y, $z))->move($direction);
                         if (!$this->map->getValue($neighbour)) {
                             $this->part1++;
-                            if (!$this->isPartOfABubble($neighbour)) {
+                            if (in_array($neighbour->toString(), $this->knownOutSide)) {
                                 $this->part2++;
                             }
                         }
@@ -50,26 +52,14 @@ class Solution extends BaseDay
         }
     }
 
-    private function isPartOfABubble(Location $location, array $visited = []) : bool
+    private function mapOutside(Location $location)
     {
-        if (in_array($location->toString(), $this->knownBubbles)) {
-            return true;
-        }
-
-        $visited[] = $location->toString();
+        $this->knownOutSide[] = $location->toString();
         foreach (Location::ALL_DIRECTIONS_3D as $direction) {
             $neighbour = (clone ($location))->move($direction);
-            if ($neighbour->isOutOfBounds($this->bounds)) {
-                return false;
-            }
-
-            if (!$this->map->getValue($neighbour) && !in_array($neighbour->toString(), $visited)
-            && !$this->isPartOfABubble($neighbour, $visited)) {
-               return false;
+            if (!in_array($neighbour->toString(), $this->knownOutSide) && !$neighbour->isOutOfBounds($this->bounds) && !$this->map->getValue($neighbour)) {
+                $this->mapOutside($neighbour);
             }
         }
-
-        $this->knownBubbles = array_unique(array_merge($this->knownBubbles, $visited));
-        return true;
     }
 }
