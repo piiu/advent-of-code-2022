@@ -13,4 +13,4 @@
 ### Issues
 - Day 12 part 2 can be automated
 - Day 16 is missing 
-- Day 18 part 2 is missing
+- Day 18 part 2 doesn't work with lava inside air bubbles

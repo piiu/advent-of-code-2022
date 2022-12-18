@@ -18,6 +18,15 @@ class Location
     const ALL_DIRECTIONS = [self::DOWN, self::LEFT, self::UP, self::RIGHT];
     const ALL_DIRECTIONS_3D = [self::DOWN, self::LEFT, self::UP, self::RIGHT, self::IN, self::OUT];
 
+    const MAX_BOUNDS = [
+        'minX' => PHP_INT_MAX,
+        'maxX' => -PHP_INT_MAX,
+        'minY' => PHP_INT_MAX,
+        'maxY' => -PHP_INT_MAX,
+        'minZ' => PHP_INT_MAX,
+        'maxZ' => -PHP_INT_MAX
+    ];
+
     public function __construct(int $x = 0, int $y = 0, int $z = 0)
     {
         $this->x = $x;
@@ -69,5 +78,15 @@ class Location
     public function getManhattanDistanceFrom(self $location) : int
     {
         return abs($location->x - $this->x) + abs($location->y - $this->y);
+    }
+
+    public function isOutOfBounds(array $bounds) : bool
+    {
+        return (isset($bounds['maxX']) && $this->x > $bounds['maxX'])
+            || (isset($bounds['maxY']) && $this->y > $bounds['maxY'])
+            || (isset($bounds['maxZ']) && $this->z > $bounds['maxZ'])
+            || (isset($bounds['minX']) && $this->x < $bounds['minX'])
+            || (isset($bounds['minY']) && $this->y < $bounds['minY'])
+            || (isset($bounds['minZ']) && $this->z < $bounds['minZ']);
     }
 }
