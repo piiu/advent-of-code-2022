@@ -31,10 +31,10 @@ class Solution extends BaseDay
                     if (!$firstCycleState) {
                         $firstCycleState = new Map($map->getMap());
                         $firstCycleRockCount = $rockCount;
-                        $firstCycleHeight = $this->getHeight($firstCycleState);
+                        $firstCycleHeight = abs($this->getHighestPoint($firstCycleState));
                         $moveRockCombinations = [];
                     } else {
-                        $loopHeight = $this->getHeight($map) - $firstCycleHeight;
+                        $loopHeight = abs($this->getHighestPoint($map)) - $firstCycleHeight;
                         $loopRockCount = $rockCount - $firstCycleRockCount;
                         break 2;
                     }
@@ -53,15 +53,15 @@ class Solution extends BaseDay
                 }
             }
             if ($rockCount === 2022) {
-                $this->part1 = abs($this->getHeight($map));
+                $this->part1 = abs($this->getHighestPoint($map));
             }
 
             $rockCount++;
             $nextRockClass = $currentRock->getNextRockClass();
-            $currentRock = new $nextRockClass(new Location(2, $this->getHeight($map) - 4));
+            $currentRock = new $nextRockClass(new Location(2, $this->getHighestPoint($map) - 4));
         }
 
-        $cycles = floor((1000000000000 - $firstCycleHeight) / $loopHeight);
+        $cycles = floor((1000000000000 - $firstCycleRockCount) / $loopRockCount);
         $rocksRemaining = 1000000000000 - $cycles * $loopRockCount - $firstCycleRockCount;
 
         for ($i = 0; $i < $rocksRemaining; $i++) {
@@ -77,12 +77,12 @@ class Solution extends BaseDay
             }
         }
 
-        $this->part2 = $this->getHeight($firstCycleState) + $cycles * $loopHeight;
+        $this->part2 = abs($this->getHighestPoint($firstCycleState)) + $cycles * $loopHeight;
     }
 
-    private function getHeight(Map $map) : int
+    private function getHighestPoint(Map $map) : int
     {
-        return abs(array_key_first($map->getMap()));
+        return array_key_first($map->getMap());
     }
 
     private function getDirection() : string
