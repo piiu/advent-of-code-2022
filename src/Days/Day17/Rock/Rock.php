@@ -12,7 +12,6 @@ abstract class Rock
     /** @var Location[] */
     protected array $locations;
     protected string $nextRockClass;
-    protected string $previousRockClass;
 
     public function canMove(Map $map, string $direction, Location $exception = null) : bool
     {
@@ -46,11 +45,6 @@ abstract class Rock
     public function getNextRockClass(): string
     {
         return $this->nextRockClass;
-    }
-
-    public function getPreviousRockClass(): string
-    {
-        return $this->previousRockClass;
     }
 
     public function getName() : string
