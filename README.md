@@ -14,3 +14,4 @@
 - Day 12 part 2 can be automated
 - Day 16 is missing 
 - Day 17 part 2 is slightly wrong & needs dubugging
+- Day 18 part 2 is missing
