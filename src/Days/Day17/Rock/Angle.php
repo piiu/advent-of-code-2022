@@ -7,6 +7,7 @@ use AdventOfCode\Common\Coordinates\Location;
 class Angle extends Rock
 {
     protected string $nextRockClass = VBar::class;
+    protected string $previousRockClass = Plus::class;
 
     public function __construct(Location $start)
     {

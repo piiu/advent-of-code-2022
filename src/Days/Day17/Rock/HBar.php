@@ -7,6 +7,7 @@ use AdventOfCode\Common\Coordinates\Location;
 class HBar extends Rock
 {
     protected string $nextRockClass = Plus::class;
+    protected string $previousRockClass = Square::class;
 
     public function __construct(Location $start)
     {

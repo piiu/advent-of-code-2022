@@ -6,6 +6,7 @@ use AdventOfCode\Common\BaseDay;
 use AdventOfCode\Common\Coordinates\Location;
 use AdventOfCode\Common\Coordinates\Map;
 use AdventOfCode\Days\Day17\Rock\HBar;
+use AdventOfCode\Days\Day17\Rock\Rock;
 
 class Solution extends BaseDay
 {
@@ -20,64 +21,43 @@ class Solution extends BaseDay
         $rockCount = 1;
 
         $moveRockCombinations = [];
-
-
         $firstCycleState = null;
         $currentRock = new HBar(new Location(2, -4));
         while (true) {
-            while (true) {
-                $combination = $this->directionIndex . '|' . $currentRock->getName();
-                if (in_array($combination, $moveRockCombinations)) {
-                    if (!$firstCycleState) {
-                        $firstCycleState = new Map($map->getMap());
-                        $firstCycleRockCount = $rockCount;
-                        $firstCycleHeight = abs($this->getHighestPoint($firstCycleState));
-                        $moveRockCombinations = [];
-                    } else {
-                        $loopHeight = abs($this->getHighestPoint($map)) - $firstCycleHeight;
-                        $loopRockCount = $rockCount - $firstCycleRockCount;
-                        break 2;
-                    }
-                }
-                $moveRockCombinations[] = $combination;
-
-                $direction = $this->getDirection();
-                if ($currentRock->canMove($map, $direction)) {
-                    $currentRock->move($direction);
-                }
-                if ($currentRock->canMove($map, Location::DOWN)) {
-                    $currentRock->move(Location::DOWN);
-                } else {
-                    $currentRock->rest($map);
-                    break;
-                }
-            }
+            $this->moveWhileCan($currentRock, $map);
             if ($rockCount === 2022) {
                 $this->part1 = abs($this->getHighestPoint($map));
             }
 
+            $combination = $this->directionIndex . '|' . $currentRock->getName();
+            if (in_array($combination, $moveRockCombinations)) {
+                if (!$firstCycleState) {
+                    $firstCycleState = new Map($map->getMap());
+                    $firstCycleRockCount = $rockCount;
+                    $firstCycleLastMove = $currentRock::class;
+                    $moveRockCombinations = [];
+                } else {
+                    $loopHeight = abs($this->getHighestPoint($map)) - abs($this->getHighestPoint($firstCycleState));
+                    $loopRockCount = $rockCount - $firstCycleRockCount;
+                    break;
+                }
+            }
+            $moveRockCombinations[] = $combination;
+
             $rockCount++;
-            $nextRockClass = $currentRock->getNextRockClass();
-            $currentRock = new $nextRockClass(new Location(2, $this->getHighestPoint($map) - 4));
+            $currentRock = $this->spawnRockByClass($currentRock->getNextRockClass(), $map);
         }
 
         $cycles = floor((1000000000000 - $firstCycleRockCount) / $loopRockCount);
         $rocksRemaining = 1000000000000 - $cycles * $loopRockCount - $firstCycleRockCount;
+        $currentRock = $this->spawnRockByClass($firstCycleLastMove, $firstCycleState);
 
         for ($i = 0; $i < $rocksRemaining; $i++) {
-            $direction = $this->getDirection();
-            if ($currentRock->canMove($firstCycleState, $direction)) {
-                $currentRock->move($direction);
-            }
-            if ($currentRock->canMove($firstCycleState, Location::DOWN)) {
-                $currentRock->move(Location::DOWN);
-            } else {
-                $currentRock->rest($firstCycleState);
-                break;
-            }
+            $currentRock = $this->spawnRockByClass($currentRock->getNextRockClass(), $firstCycleState);
+            $this->moveWhileCan($currentRock, $firstCycleState);
         }
 
-        $this->part2 = abs($this->getHighestPoint($firstCycleState)) + $cycles * $loopHeight;
+        $this->part2 = abs($this->getHighestPoint($firstCycleState)) + ($cycles * $loopHeight);
     }
 
     private function getHighestPoint(Map $map) : int
@@ -94,5 +74,27 @@ class Solution extends BaseDay
             '>' => Location::RIGHT,
             '<' => Location::LEFT
         };
+    }
+
+    private function spawnRockByClass(string $className, Map $map) : Rock
+    {
+        return new $className(new Location(2, $this->getHighestPoint($map) - 4));
+    }
+
+    private function moveWhileCan(Rock $currentRock, Map $firstCycleState)
+    {
+        $direction = $this->getDirection();
+        while (true) {
+            if ($currentRock->canMove($firstCycleState, $direction)) {
+                $currentRock->move($direction);
+            }
+            if ($currentRock->canMove($firstCycleState, Location::DOWN)) {
+                $currentRock->move(Location::DOWN);
+            } else {
+                $currentRock->rest($firstCycleState);
+                break;
+            }
+            $direction = $this->getDirection();
+        }
     }
 }
