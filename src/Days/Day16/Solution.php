@@ -7,10 +7,8 @@ use SplQueue;
 
 class Solution extends BaseDay
 {
-    /** @var Valve[] */
     private array $valves = [];
     private array $routeLengths = [];
-    private array $history = [];
 
     public function execute()
     {
@@ -18,38 +16,47 @@ class Solution extends BaseDay
         $usableValves = [];
         foreach ($this->getInputArray() as $row) {
             preg_match($regex, $row, $matches);
-            $valve = new Valve($matches['id'], $matches['rate'], explode(', ', $matches['valves']));
-            $this->valves[$valve->id] = $valve;
-            if ($valve->flowRate > 0) {
-                $usableValves[] = $valve->id;
+            $this->valves[$matches['id']] = [
+                'flowRate' => $matches['rate'],
+                'leadsTo' => explode(', ', $matches['valves'])
+            ];
+            if ($matches['rate'] > 0) {
+                $usableValves[] = $matches['id'];
             }
         }
 
-        $this->part1 = $this->getBestFlowRate($this->valves['AA'], $usableValves);
+        $this->part1 = $this->getBestFlowRate('AA', $usableValves);
 
-        $openers = [
-            new Opener('Human', $this->valves['AA']),
-            new Opener('Elephant', $this->valves['AA'])
+        $persons = [
+            [
+                'currentValve' => 'AA',
+                'pathAhead' => 0,
+                'needsNewPath' => true
+            ],[
+                'currentValve' => 'AA',
+                'pathAhead' => 0,
+                'needsNewPath' => true
+            ]
         ];
-        $this->part2 = $this->getBestFlowRateWithElephant($openers, $usableValves);
+        $this->part2 = $this->getBestFlowRateWithElephant($persons, $usableValves);
     }
 
-    private function getBestFlowRate(Valve $currentValve, array $closedValves, $minute = 1, $releasedPressure = 0) : int
+    private function getBestFlowRate(string $currentValve, array $closedValves, $minute = 1, $releasedPressure = 0) : int
     {
         if ($minute > 1) {
-            $releasedPressure += $this->flow($closedValves, 1);
-            unset($closedValves[array_search($currentValve->id, $closedValves)]);
+            $releasedPressure += $this->flow($closedValves);
+            unset($closedValves[array_search($currentValve, $closedValves)]);
             $minute++;
         }
 
         $bestMove = 0;
         foreach ($closedValves as $nextValve) {
-            $routeDistance = $this->findShortestSteps($currentValve->id, $nextValve);
+            $routeDistance = $this->findShortestSteps($currentValve, $nextValve);
             if ($minute + $routeDistance >= 30) {
                 continue;
             }
             $pressureReleasedOnWalk = $this->flow($closedValves, $routeDistance);
-            $move = $this->getBestFlowRate($this->valves[$nextValve], $closedValves, $minute + $routeDistance, $releasedPressure + $pressureReleasedOnWalk);
+            $move = $this->getBestFlowRate($nextValve, $closedValves, $minute + $routeDistance, $releasedPressure + $pressureReleasedOnWalk);
             $bestMove = max($move, $bestMove);
 
         }
@@ -61,78 +68,59 @@ class Solution extends BaseDay
         return $releasedPressure;
     }
 
-    private function getBestFlowRateWithElephant(array $openers, array $closedValves, $minute = 1, $releasedPressure = 0, $history = []) : int
+    private function getBestFlowRateWithElephant(array $persons, array $closedValves, $minute = 1, $releasedPressure = 0) : int
     {
-        $history[] = "Minute $minute";
         $flowing = $this->flow($closedValves);
-        $history[] = "Releasing $flowing pressure";
-
         $releasedPressure += $flowing;
         $minutesLeft = 26 - $minute;
 
-        /** @var Opener[] $openers */
-        foreach ($openers as $opener) {
-            if ($opener->pathAhead > 0) {
-                $opener->pathAhead--;
-                if ($opener->pathAhead > 0) {
-                    $history[] = "$opener->id moves towards " . $opener->currentValve->id . ", $opener->pathAhead steps to go";
-                } else {
-                    $history[] = "$opener->id moves to " . $opener->currentValve->id;
-                }
-            } elseif (in_array($opener->currentValve->id, $closedValves)) {
-                $history[] = "$opener->id opens " . $opener->currentValve->id;
-                unset($closedValves[array_search($opener->currentValve->id, $closedValves)]);
-                $opener->needsNewPath = true;
+        foreach ($persons as $id => $person) {
+            if ($person['pathAhead'] > 0) {
+                $persons[$id]['pathAhead'] = $person['pathAhead'] - 1;
+            } elseif (in_array($person['currentValve'], $closedValves)) {
+                unset($closedValves[array_search($person['currentValve'], $closedValves)]);
+                $persons[$id]['needsNewPath'] = true;
             }
         }
 
         if (empty($closedValves) || !$minutesLeft) {
-            $history[] = "Waiting for $minutesLeft minutes";
             $releasedPressure += $this->flow($closedValves, $minutesLeft);
-
-            if (empty($this->history) || $this->history['released'] < $releasedPressure) {
-                $this->history = [
-                    'released' => $releasedPressure,
-                    'history' => $history
-                ];
-            }
-
             return $releasedPressure;
         }
 
-        if ($openers[0]->needsNewPath || $openers[1]->needsNewPath) {
+        if ($persons[0]['needsNewPath'] || $persons[1]['needsNewPath']) {
             $bestMove = 0;
             foreach ($closedValves as $nextValve) {
-                foreach ($openers as $opener) {
-                    if ($opener->currentValve->id === $nextValve) {
+                foreach ($persons as $person) {
+                    if ($person['currentValve'] === $nextValve) {
                         continue 2;
                     }
                 }
 
                 $combinations = [];
-                if ($openers[0]->needsNewPath && $openers[1]->needsNewPath) {
+                if ($persons[0]['needsNewPath'] && $persons[1]['needsNewPath']) {
                     foreach ([[0, 1], [1, 0]] as $sequence) {
-                        $opener1 = $this->getNewOpenerToGoToValve($openers[$sequence[0]], $nextValve, $minutesLeft);
-                        if (!$opener1) {
+                        $person1 = $this->getPersonToGoToValve($persons[$sequence[0]], $nextValve, $minutesLeft);
+                        if (!$person1) {
                             continue;
                         }
                         foreach ($closedValves as $otherNextValve) {
-                            $opener2 = $this->getNewOpenerToGoToValve($openers[$sequence[1]], $otherNextValve, $minutesLeft);
-                            if ($opener2 && $otherNextValve !== $opener1->currentValve->id) {
-                                $combinations[] = [clone $opener1, $opener2];
+                            $person2 = $this->getPersonToGoToValve($persons[$sequence[1]], $otherNextValve, $minutesLeft);
+                            if ($person2 && $otherNextValve !== $person1['currentValve']) {
+                                $combinations[] = [$person1, $person2];
                             }
                         }
                     }
                 } else {
-                    $opener1 = $openers[0]->needsNewPath ? ($this->getNewOpenerToGoToValve($openers[0], $nextValve, $minutesLeft)) : clone $openers[0];
-                    $opener2 = $openers[1]->needsNewPath ? ($this->getNewOpenerToGoToValve($openers[1], $nextValve, $minutesLeft)) : clone $openers[1];
-                    if ($opener1 && $opener2) {
-                        $combinations[] = [$opener1, $opener2];
+                    $person1 = $persons[0]['needsNewPath'] ? ($this->getPersonToGoToValve($persons[0], $nextValve, $minutesLeft)) : $persons[0];
+                    $person2 = $persons[1]['needsNewPath'] ? ($this->getPersonToGoToValve($persons[1], $nextValve, $minutesLeft)) : $persons[1];
+                    if ($person1 && $person2) {
+                        $combinations[] = [$person1, $person2];
                     }
 
                 }
                 foreach ($combinations as $combination) {
-                    $move = $this->getBestFlowRateWithElephant($combination, $closedValves,$minute + 1, $releasedPressure, $history);
+                    $move = $this->getBestFlowRateWithElephant($combination, $closedValves,$minute + 1, $releasedPressure);
                     $bestMove = max($move, $bestMove);
                 }
 
@@ -142,16 +130,19 @@ class Solution extends BaseDay
             }
         }
 
-        return $this->getBestFlowRateWithElephant([clone $openers[0], clone $openers[1]], $closedValves, $minute + 1, $releasedPressure, $history);
+        return $this->getBestFlowRateWithElephant($persons, $closedValves, $minute + 1, $releasedPressure);
 
     }
 
     private function flow(array $closedValves, int $minutes = 1, ) : int
     {
-        $openValves = array_map(function(Valve $valve) use ($closedValves) {
-            return !in_array($valve->id, $closedValves) ? $valve->flowRate : 0;
-        }, $this->valves);
-        return $minutes * array_sum($openValves);
+        $sum = 0;
+        foreach (array_keys($this->valves) as $valve) {
+            if (!in_array($valve, $closedValves)) {
+                $sum += $this->valves[$valve]['flowRate'];
+            }
+        }
+        return $minutes * $sum;
     }
 
     private function findShortestSteps(string $valveA, string $valveB) : int
@@ -173,7 +164,7 @@ class Solution extends BaseDay
                     $this->routeLengths[$routeId] = $steps;
                     return $steps;
                 }
-                foreach ($this->valves[$currentValve]->leadsTo as $connectedValve) {
+                foreach ($this->valves[$currentValve]['leadsTo'] as $connectedValve) {
                     if (!in_array($connectedValve, $visited)) {
                         $queue->enqueue($connectedValve);
                         $visited[] = $connectedValve;
@@ -184,20 +175,17 @@ class Solution extends BaseDay
         }
     }
 
-    private function getNewOpenerToGoToValve(Opener $currentOpener, string $valveIndex, $minutesLeft) : ?Opener
+    private function getPersonToGoToValve(array $currentperson, string $nextValve, $minutesLeft) : ?array
     {
-        $valve = $this->valves[$valveIndex];
-        $steps = $this->findShortestSteps($currentOpener->currentValve->id, $valve->id);
+        $steps = $this->findShortestSteps($currentperson['currentValve'], $nextValve);
         if ($steps >= $minutesLeft) {
             return null;
         }
-        $opener = new Opener($currentOpener->id, $valve);
-        $opener->needsNewPath = false;
-        $opener->pathAhead = $steps;
-        if ($minutesLeft === 25) {
-            $opener->pathAhead--;
-        }
-        return $opener;
+        return [
+            'currentValve' => $nextValve,
+            'pathAhead' => $minutesLeft === 25 ? ($steps - 1) : $steps,
+            'needsNewPath' => false
+        ];
     }
 
     private function getRouteId(array $parts) : string
