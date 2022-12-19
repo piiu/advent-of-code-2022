@@ -12,33 +12,43 @@ class Solution extends BaseDay
 
     public function execute()
     {
+        $this->loadValves();
+        $usableValves = $this->getUsableValves();
+
+        $this->part1 = $this->getBestFlowRate('AA', $usableValves);
+        $this->part2 = $this->getBestFlowRateWithElephant($this->getInitialPersons(), $usableValves);
+    }
+
+    private function loadValves()
+    {
         $regex = '/Valve (?<id>-?\w*) has flow rate=(?<rate>-?\d*); tunnels? leads? to valves? (?<valves>.*)/';
-        $usableValves = [];
         foreach ($this->getInputArray() as $row) {
             preg_match($regex, $row, $matches);
             $this->valves[$matches['id']] = [
                 'flowRate' => $matches['rate'],
                 'leadsTo' => explode(', ', $matches['valves'])
             ];
-            if ($matches['rate'] > 0) {
-                $usableValves[] = $matches['id'];
+        }
+    }
+
+    private function getUsableValves() : array
+    {
+        $usableValves = [];
+        foreach ($this->valves as $id => $valve) {
+            if ($valve['flowRate'] > 0) {
+                $usableValves[] = $id;
             }
         }
+        return $usableValves;
+    }
 
-        $this->part1 = $this->getBestFlowRate('AA', $usableValves);
-
-        $persons = [
-            [
-                'currentValve' => 'AA',
-                'pathAhead' => 0,
-                'needsNewPath' => true
-            ],[
-                'currentValve' => 'AA',
-                'pathAhead' => 0,
-                'needsNewPath' => true
-            ]
-        ];
-        $this->part2 = $this->getBestFlowRateWithElephant($persons, $usableValves);
+    private function getInitialPersons()
+    {
+        return array_fill(0, 2, [
+            'currentValve' => 'AA',
+            'pathAhead' => 0,
+            'needsNewPath' => true
+        ]);
     }
 
     private function getBestFlowRate(string $currentValve, array $closedValves, $minute = 1, $releasedPressure = 0) : int
@@ -175,9 +185,9 @@ class Solution extends BaseDay
         }
     }
 
-    private function getPersonToGoToValve(array $currentperson, string $nextValve, $minutesLeft) : ?array
+    private function getPersonToGoToValve(array $currentPerson, string $nextValve, $minutesLeft) : ?array
     {
-        $steps = $this->findShortestSteps($currentperson['currentValve'], $nextValve);
+        $steps = $this->findShortestSteps($currentPerson['currentValve'], $nextValve);
         if ($steps >= $minutesLeft) {
             return null;
         }
