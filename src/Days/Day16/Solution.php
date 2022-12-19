@@ -3,6 +3,7 @@
 namespace AdventOfCode\Days\Day16;
 
 use AdventOfCode\Common\BaseDay;
+use SplQueue;
 
 class Solution extends BaseDay
 {
@@ -12,8 +13,6 @@ class Solution extends BaseDay
     private array $valvesWithFlowRate = [];
 
     private array $routeLengths = [];
-
-    private array $histories = [];
 
     public function execute()
     {
@@ -28,25 +27,22 @@ class Solution extends BaseDay
         }
 
         $this->part1 = $this->getBestFlowRate($this->valves['AA'], $this->valvesWithFlowRate);
-        ksort($this->histories);
     }
 
-    private function getBestFlowRate(Valve $currentValve, array $closedValves, $minute = 1, $releasedPressure = 0, $history = []) : int
+    private function getBestFlowRate(Valve $currentValve, array $closedValves, $minute = 1, $releasedPressure = 0) : int
     {
         if (in_array($currentValve->id, $closedValves) && $currentValve->flowRate > 0) {
-            $releasedPressure += $this->flow($closedValves, 1, $history);
+            $releasedPressure += $this->flow($closedValves, 1);
             unset($closedValves[array_search($currentValve->id, $closedValves)]);
-            $history[] = "Minute $minute: Open valve $currentValve->id";
             $minute++;
         }
 
         $bestMove = 0;
         foreach ($closedValves as $nextValve) {
-            $routeDistance = $this->getShortestRoute($currentValve, $nextValve);
+            $routeDistance = $this->findShortestSteps($currentValve->id, $nextValve);
             if ($minute + $routeDistance < 30) {
-                $history[] = "Minute $minute: Walk  valve $nextValve for $routeDistance minutes";
-                $pressureReleasedOnWalk = $this->flow($closedValves, $routeDistance, $history);
-                $move = $this->getBestFlowRate($this->valves[$nextValve], $closedValves, $minute + $routeDistance, $releasedPressure + $pressureReleasedOnWalk, $history);
+                $pressureReleasedOnWalk = $this->flow($closedValves, $routeDistance);
+                $move = $this->getBestFlowRate($this->valves[$nextValve], $closedValves, $minute + $routeDistance, $releasedPressure + $pressureReleasedOnWalk);
                 if ($move && (!$bestMove || $bestMove < $move)) {
                     $bestMove = $move;
                 }
@@ -55,53 +51,56 @@ class Solution extends BaseDay
         if ($bestMove > 0) {
             return $bestMove;
         }
-        $history[] = "Minute $minute: Wait until end";
 
-        $releasedPressure += $this->flow($closedValves, 30 - $minute);
-
-        $this->histories[$releasedPressure] = $history;
+        $releasedPressure += $this->flow($closedValves, 30 - $minute + 1);
         return $releasedPressure;
     }
 
-    private function flow(array $closedValves, int $minutes = 1, array &$history = []) : int
+    private function flow(array $closedValves, int $minutes = 1, ) : int
     {
         $openValves = array_map(function(Valve $valve) use ($closedValves) {
             return !in_array($valve->id, $closedValves) ? $valve->flowRate : 0;
         }, $this->valves);
-        $perMinute = array_sum($openValves);
-        $history[] = "Flowing $perMinute per minute for $minutes minutes";
         return $minutes * array_sum($openValves);
     }
 
-    private function getShortestRoute(Valve $currentValve, string $destinationId, array $path = []) : ?int
+
+    private function findShortestSteps(string $valveA, string $valveB) : int
     {
-        $pathId = ($path[0] ?? $currentValve->id).'->'.$destinationId;
-        if (isset($this->routeLengths[$pathId])) {
-            return $this->routeLengths[$pathId];
+        $routeId = $this->getRouteId([$valveA, $valveB]);
+        if (isset($this->routeLengths[$routeId])) {
+            return $this->routeLengths[$routeId];
         }
 
-        $path[] = $currentValve->id;
-        if (in_array($destinationId, $currentValve->leadsTo)) {
-            $length = count($path);
-            $this->routeLengths[$pathId] = $length;
-            return $length;
-        }
+        $queue = new SplQueue();
+        $queue->enqueue($valveA);
+        $visited = [$valveA];
+        $steps = 0;
+        while (!$queue->isEmpty()) {
+            $size = $queue->count();
+            for ($i = 0; $i < $size; $i++) {
+                $currentNode = $queue->dequeue();
 
-        $bestPath = null;
-        foreach ($currentValve->leadsTo as $to) {
-            if (in_array($to, $path)) {
-                continue;
-            }
-            $potentialPath = $this->getShortestRoute($this->valves[$to], $destinationId, $path);
-            if (!$potentialPath) {
-                continue;
-            }
-            if (!$bestPath || $potentialPath < $bestPath) {
-                $bestPath = $potentialPath;
-            }
-        }
+                if ($currentNode == $valveB) {
+                    $this->routeLengths[$routeId] = $steps;
+                    return $steps;
+                }
 
-        return $bestPath;
+                foreach ($this->valves[$currentNode]->leadsTo as $connectedNode) {
+                    if (!in_array($connectedNode, $visited)) {
+                        $queue->enqueue($connectedNode);
+                        $visited[] = $connectedNode;
+                    }
+                }
+            }
+            $steps++;
+        }
+    }
+
+    private function getRouteId(array $parts) : string
+    {
+        sort($parts);
+        return implode('->', $parts);
     }
 }
 
