@@ -11,5 +11,4 @@
 `composer day [number]`
 
 ### Issues
-- Day 12 part 2 can be automated
-- Day 16 is missing 
+- Day 12 part 2 is not automated and needs human interaction

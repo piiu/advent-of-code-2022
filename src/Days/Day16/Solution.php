@@ -25,7 +25,7 @@ class Solution extends BaseDay
             }
         }
 
-        //$this->part1 = $this->getBestFlowRate($this->valves['AA'], $usableValves);
+        $this->part1 = $this->getBestFlowRate($this->valves['AA'], $usableValves);
 
         $openers = [
             new Opener('Human', $this->valves['AA']),
@@ -79,7 +79,7 @@ class Solution extends BaseDay
                 } else {
                     $history[] = "$opener->id moves to " . $opener->currentValve->id;
                 }
-            } elseif ($minute > 1) {
+            } elseif (in_array($opener->currentValve->id, $closedValves)) {
                 $history[] = "$opener->id opens " . $opener->currentValve->id;
                 unset($closedValves[array_search($opener->currentValve->id, $closedValves)]);
                 $opener->needsNewPath = true;
@@ -119,13 +119,13 @@ class Solution extends BaseDay
                         foreach ($closedValves as $otherNextValve) {
                             $opener2 = $this->getNewOpenerToGoToValve($openers[$sequence[1]], $otherNextValve, $minutesLeft);
                             if ($opener2 && $otherNextValve !== $opener1->currentValve->id) {
-                                $combinations[] = [$opener1, $opener2];
+                                $combinations[] = [clone $opener1, $opener2];
                             }
                         }
                     }
                 } else {
-                    $opener1 = $openers[0]->needsNewPath ? ($this->getNewOpenerToGoToValve($openers[0], $nextValve, $minutesLeft)) : $openers[0];
-                    $opener2 = $openers[1]->needsNewPath ? ($this->getNewOpenerToGoToValve($openers[1], $nextValve, $minutesLeft)) : $openers[1];
+                    $opener1 = $openers[0]->needsNewPath ? ($this->getNewOpenerToGoToValve($openers[0], $nextValve, $minutesLeft)) : clone $openers[0];
+                    $opener2 = $openers[1]->needsNewPath ? ($this->getNewOpenerToGoToValve($openers[1], $nextValve, $minutesLeft)) : clone $openers[1];
                     if ($opener1 && $opener2) {
                         $combinations[] = [$opener1, $opener2];
                     }
@@ -142,7 +142,7 @@ class Solution extends BaseDay
             }
         }
 
-        return $this->getBestFlowRateWithElephant($openers, $closedValves, $minute + 1, $releasedPressure, $history);
+        return $this->getBestFlowRateWithElephant([clone $openers[0], clone $openers[1]], $closedValves, $minute + 1, $releasedPressure, $history);
 
     }
 
@@ -187,13 +187,12 @@ class Solution extends BaseDay
     private function getNewOpenerToGoToValve(Opener $currentOpener, string $valveIndex, $minutesLeft) : ?Opener
     {
         $valve = $this->valves[$valveIndex];
-        $opener = clone $currentOpener;
-        $steps = $this->findShortestSteps($opener->currentValve->id, $valve->id);
+        $steps = $this->findShortestSteps($currentOpener->currentValve->id, $valve->id);
         if ($steps >= $minutesLeft) {
             return null;
         }
+        $opener = new Opener($currentOpener->id, $valve);
         $opener->needsNewPath = false;
-        $opener->currentValve = $valve;
         $opener->pathAhead = $steps;
         if ($minutesLeft === 25) {
             $opener->pathAhead--;
