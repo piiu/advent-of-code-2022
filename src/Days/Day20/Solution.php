@@ -3,7 +3,6 @@
 namespace AdventOfCode\Days\Day20;
 
 use AdventOfCode\Common\BaseDay;
-use AdventOfCode\Common\Console\Utils;
 
 class Solution extends BaseDay
 {
