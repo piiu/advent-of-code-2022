@@ -12,3 +12,4 @@
 
 ### Issues
 - Day 12 part 2 is not automated and needs human interaction
+- Day 16 part 2 runs forever
