@@ -35,9 +35,9 @@ class Number
     public function move()
     {
         $adjustment = $this->value < 0 ? ceil($this->value / $this->total) : floor ($this->value / $this->total);
-        $this->currentPosition += $this->value % $this->total + $adjustment;
+        $this->currentPosition += ($this->value + $adjustment) % $this->total;
         if ($this->currentPosition < 0) {
-            $this->currentPosition += $this->total - 1;
+            $this->currentPosition = $this->currentPosition + $this->total - 1;
         }
         if ($this->currentPosition >= $this->total) {
             $this->currentPosition = $this->currentPosition % $this->total + 1;
