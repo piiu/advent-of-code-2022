@@ -17,7 +17,8 @@ class Solver
     public function solveForX(string $equation) : int
     {
         $result = $this->process($equation);
-        $solution = $result->pods->find('Solution')->subpods[0]->plaintext ?? $result->pods->find('Result')->subpods[0]->plaintext;
+        $solution = $result->pods->find('Solution')->subpods[0]->plaintext
+            ?? $result->pods->find('Result')->subpods[0]->plaintext;
         return (int)str_replace('x = ', '', $solution);
     }
 

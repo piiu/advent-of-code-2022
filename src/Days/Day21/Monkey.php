@@ -24,50 +24,50 @@ class Monkey
 
     public function doMath(Solver $solver = null) : string
     {
-        $math = $this->getMath($solver);
-        if (str_contains($math, 'x')) {
-            return $math;
-        }
-        eval("\$result = $math;");
-        return $result;
+        $math = $this->getEquation($solver);
+        return $this->includesVariable($math) ? $math : $this->evalSolver($math);
     }
 
-    public function getMath(Solver $solver = null) : string
+    public function getEquation(Solver $solver = null) : string
     {
-        if (is_numeric($this->math) || $this->math === 'x') {
-            return $this->math;
-        }
         $math = $this->math;
         foreach ($this->waitingFor as $monkey) {
-            $monkeyMath = $monkey->getMath($solver);
+            $monkeyMath = $monkey->getEquation($solver);
             if (!is_numeric($monkeyMath) && $monkeyMath !== 'x') {
                 $monkeyMath = '(' . $monkeyMath . ')';
             }
             $math = str_replace($monkey->id, $monkeyMath, $math);
-            if ($solver && str_contains($math, 'x') && strlen($math) > 60) {
-                $y = $this->extractConstantFromEquation($math);
-                if ($y) {
-                    $math = $solver->simplify($math);
-                    $math = str_replace('y', $y, $math);
-                }
+            if ($solver) {
+                $math = $this->simplifyWithSolver($solver, $math);
             }
         }
         if (!preg_match('/[a-z]/', $math)) {
-            eval("\$result = $math;");
-            return $result;
+            return $this->evalSolver($math);
         }
 
         return $math;
     }
 
-    private function extractConstantFromEquation(string &$math) : ?string
+    private function includesVariable(string $math) : bool
     {
-        preg_match('/[a-z]{4}/', $math, $matches);
-        if (empty($matches)) {
-            return null;
+        return str_contains($math, 'x');
+    }
+
+    private function simplifyWithSolver(Solver $solver, string $math) : string
+    {
+        if ($this->includesVariable($math) && strlen($math) > 60) {
+            if (preg_match('/[a-z]{4}/', $math, $matches)) {
+                $math = str_replace($matches[0], 'y', $math);
+                $math = $solver->simplify($math);
+                return str_replace('y', $matches[0], $math);
+            }
         }
-        $match = $matches[0];
-        $math = str_replace($match, 'y', $math);
-        return $match;
+        return $math;
+    }
+
+    private function evalSolver(string $math) : int
+    {
+        eval("\$result = $math;");
+        return $result;
     }
 }

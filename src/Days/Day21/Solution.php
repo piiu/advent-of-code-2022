@@ -11,19 +11,23 @@ class Solution extends BaseDay
     public function execute()
     {
         $monkeys = $this->getMonkeys();
-        $this->part1 = $monkeys['root']->doMath();
+        $solver = $this->getSolver();
 
-        $solver = null;
-        if ($waEngine = EngineFactory::create()) {
-            $solver = new Solver($waEngine);
-        }
+        $this->part1 = $monkeys['root']->doMath();
 
         $monkeys['humn']->math = 'x';
         $monkeys['root']->math = str_replace('+', '=', $monkeys['root']->math);
-
         $equation = $monkeys['root']->doMath($solver);
 
         $this->part2 = $solver ? $solver->solveForX($equation) : $equation;
+    }
+
+    private function getSolver() : ?Solver
+    {
+        if ($waEngine = EngineFactory::create()) {
+            return new Solver($waEngine);
+        }
+        return null;
     }
 
     /**
