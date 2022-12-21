@@ -5,7 +5,10 @@
 - Composer
 
 #### Installation 
-`composer install`
+1. `composer install`
+2. Add a [WolframAlpha AppID](https://developer.wolframalpha.com/portal/myapps/) to `config/app.ini` 
+
+WolframAlpha is only necessary for day 21 part 2. If no AppID is configured, the result will be an equation that can be solved by hand.
 
 #### Run 
 `composer day [number]`
