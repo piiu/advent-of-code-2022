@@ -15,7 +15,10 @@ class Location
     const IN = 'I';
     const OUT = 'O';
 
-    const ALL_DIRECTIONS = [self::DOWN, self::LEFT, self::UP, self::RIGHT];
+    const TURN_RIGHT = 'R';
+    const TURN_LEFT = 'L';
+
+    const ALL_DIRECTIONS = [self::RIGHT, self::DOWN, self::LEFT, self::UP];
     const ALL_DIRECTIONS_3D = [self::DOWN, self::LEFT, self::UP, self::RIGHT, self::IN, self::OUT];
 
     const MAX_BOUNDS = [
@@ -88,5 +91,15 @@ class Location
             || (isset($bounds['minX']) && $this->x < $bounds['minX'])
             || (isset($bounds['minY']) && $this->y < $bounds['minY'])
             || (isset($bounds['minZ']) && $this->z < $bounds['minZ']);
+    }
+
+    public static function turn(string $currentDirection, string $turnDirection) : string
+    {
+        $currentIndex = array_search($currentDirection, self::ALL_DIRECTIONS);
+        if ($turnDirection === self::TURN_RIGHT) {
+            return self::ALL_DIRECTIONS[($currentIndex + 1) % 4];
+        } else {
+            return self::ALL_DIRECTIONS[($currentIndex - 1 + 4) % 4];
+        }
     }
 }

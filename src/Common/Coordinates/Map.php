@@ -89,4 +89,41 @@ class Map
     {
         ksort($this->map);
     }
+
+    public function getFirstNonEmptyOnY(int $y) : Location
+    {
+        foreach ($this->map[$y] as $x => $value) {
+            if (!empty(trim($value))) {
+                return new Location($x, $y);
+            }
+        }
+    }
+
+    public function getLastNonEmptyOnY(int $y) : Location
+    {
+        foreach (array_reverse($this->map[$y], true) as $x => $value) {
+            if (!empty(trim($value))) {
+                return new Location($x, $y);
+            }
+        }
+    }
+
+    public function getFirstNonEmptyOnX(int $x) : Location
+    {
+        foreach ($this->map as $y => $row) {
+            $newLocation = new Location($x, $y);
+            if (!empty(trim($this->getValue($newLocation)))) {
+                return $newLocation;
+            }
+        }
+    }
+
+    public function getLastNonEmptyOnX(int $x) : Location
+    {
+        foreach (array_reverse($this->map, true) as $y => $row) {
+            if (!empty(trim($this->getValue(new Location($x, $y))))) {
+                return new Location($x, $y);
+            }
+        }
+    }
 }
