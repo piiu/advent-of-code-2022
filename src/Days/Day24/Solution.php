@@ -21,11 +21,11 @@ class Solution extends BaseDay
     public function execute()
     {
         $this->init();
-        $locations = [
-            $this->entrance->toString() => $this->entrance
-        ];
-
+        $locations = [$this->entrance];
+        $reachedEndOnce = false;
+        $haveSnacks = false;
         $minute = 0;
+
         do {
             $possibleMoves = [];
             $map = $this->getNextMap();
@@ -35,7 +35,19 @@ class Solution extends BaseDay
                 foreach (Location::ALL_DIRECTIONS as $direction) {
                     $newLocation = (clone $location)->move($direction);
                     if ($newLocation->isEqual($this->destination)) {
-                        $this->part1 = $minute;
+                        if (!$reachedEndOnce) {
+                            $this->part1 = $minute;
+                            $reachedEndOnce = true;
+                            $possibleMoves = [$this->destination];
+                            break 2;
+                        } elseif ($haveSnacks) {
+                            $this->part2 = $minute;
+                            break 3;
+                        }
+                    }
+                    if ($reachedEndOnce && !$haveSnacks && $newLocation->isEqual($this->entrance)) {
+                        $haveSnacks = true;
+                        $possibleMoves = [$this->entrance];
                         break 2;
                     }
 
@@ -43,13 +55,14 @@ class Solution extends BaseDay
                         $possibleMoves[$newLocation->toString()] = $newLocation;
                     }
                 }
-                if ($map->getValue($location) === self::EMPTY) {
+                if ($location->isEqual($this->entrance) || $location->isEqual($this->destination)
+                    || $map->getValue($location) === self::EMPTY) {
                     $possibleMoves[$location->toString()] = $location;
                 }
             }
 
             $locations = $possibleMoves;
-        } while (empty($this->part1));
+        } while (true);
     }
 
     private function init()
