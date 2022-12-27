@@ -3,7 +3,6 @@
 namespace AdventOfCode\Days\Day24;
 
 use AdventOfCode\Common\BaseDay;
-use AdventOfCode\Common\Console\Utils;
 use AdventOfCode\Common\Coordinates\Location;
 use AdventOfCode\Common\Coordinates\Map;
 
@@ -32,7 +31,6 @@ class Solution extends BaseDay
             $map = $this->getNextMap();
             $minute++;
 
-            Utils::output(count($locations));
             foreach ($locations as $location) {
                 foreach (Location::ALL_DIRECTIONS as $direction) {
                     $newLocation = (clone $location)->move($direction);
