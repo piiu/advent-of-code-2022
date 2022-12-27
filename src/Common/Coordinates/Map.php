@@ -13,6 +13,11 @@ class Map
         $this->map = $map;
     }
 
+    public function empty()
+    {
+        $this->map = [];
+    }
+
     public function getValue(Location $point) : ?string
     {
         return $this->map[$point->y][$point->x] ?? null;
@@ -23,14 +28,15 @@ class Map
         $this->map[$point->y][$point->x] = $value;
     }
 
-    public function draw(array $output = [])
+    public function draw(string $empty = ' ')
     {
+        $output = [];
         [$minX, $maxX] = $this->getXRange();
         [$minY, $maxY] = $this->getYRange();
         for ($y = $minY; $y <= $maxY; $y++) {
             $row = '';
             for ($x = $minX; $x <= $maxX; $x++) {
-                $row .= $this->getValue(new Location($x, $y)) ?? ' ';
+                $row .= $this->getValue(new Location($x, $y)) ?? $empty;
             }
             $output[] = $row;
         }
@@ -44,7 +50,13 @@ class Map
 
     public function getXRange() : array
     {
-        return [min(array_keys($this->map[0])), max(array_keys($this->map[0]))];
+        $min = PHP_INT_MAX;
+        $max = -PHP_INT_MAX;
+        foreach ($this->map as $row) {
+            $min = min($min, min(array_keys($row)));
+            $max = max($max, max(array_keys($row)));
+        }
+        return [$min, $max];
     }
 
     public function getYRange() : array
