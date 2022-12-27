@@ -30,7 +30,7 @@ class Map
 
     public function draw(string $empty = ' ')
     {
-        $output = [];
+        $output = [''];
         [$minX, $maxX] = $this->getXRange();
         [$minY, $maxY] = $this->getYRange();
         for ($y = $minY; $y <= $maxY; $y++) {

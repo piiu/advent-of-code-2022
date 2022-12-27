@@ -102,4 +102,14 @@ class Location
             return self::ALL_DIRECTIONS[($currentIndex - 1 + 4) % 4];
         }
     }
+
+    public function getWrappedLocationOnMap(Map $map, string $direction) : Location
+    {
+        return match ($direction) {
+            Location::LEFT => $map->getLastNonEmptyOnY($this->y),
+            Location::RIGHT => $map->getFirstNonEmptyOnY($this->y),
+            Location::DOWN => $map->getFirstNonEmptyOnX($this->x),
+            Location::UP => $map->getLastNonEmptyOnX($this->x),
+        };
+    }
 }

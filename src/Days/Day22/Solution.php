@@ -5,8 +5,6 @@ namespace AdventOfCode\Days\Day22;
 use AdventOfCode\Common\BaseDay;
 use AdventOfCode\Common\Coordinates\Location;
 use AdventOfCode\Common\Coordinates\Map;
-use AdventOfCode\Common\WolframAlpha\EngineFactory;
-use AdventOfCode\Common\WolframAlpha\Solver;
 
 class Solution extends BaseDay
 {
@@ -17,7 +15,7 @@ class Solution extends BaseDay
     public function execute()
     {
         [$rawMap, $steps] = $this->getInputArray("\n\r\n", false);
-        $this->generateMap($rawMap);
+        $this->generateMaps($rawMap);
 
         $direction = Location::RIGHT;
         $location = $this->map->getFirstNonEmptyOnY(0);
@@ -45,7 +43,7 @@ class Solution extends BaseDay
             + array_search($direction, Location::ALL_DIRECTIONS);
     }
 
-    private function generateMap(string $rawMap)
+    private function generateMaps(string $rawMap)
     {
         $rawMapArray = array_map('str_split', array_map('rtrim', explode("\n", $rawMap)));
         $this->map = new Map($rawMapArray);
@@ -57,11 +55,6 @@ class Solution extends BaseDay
         if (!empty(trim($this->map->getValue($newLocation)))) {
             return $newLocation;
         }
-        return match ($direction) {
-            Location::LEFT => $this->map->getLastNonEmptyOnY($newLocation->y),
-            Location::RIGHT => $this->map->getFirstNonEmptyOnY($newLocation->y),
-            Location::DOWN => $this->map->getFirstNonEmptyOnX($newLocation->x),
-            Location::UP => $this->map->getLastNonEmptyOnX($newLocation->x),
-        };
+        return $newLocation->getWrappedLocationOnMap($this->map, $direction);
     }
 }
