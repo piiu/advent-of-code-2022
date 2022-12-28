@@ -103,6 +103,17 @@ class Location
         }
     }
 
+    public static function getOppositeDirection(string $direction) : string
+    {
+        $index = array_search($direction, self::ALL_DIRECTIONS);
+        return self::ALL_DIRECTIONS[($index + 2) % 4];
+    }
+
+    public static function getDirectionOffset(string $direction1, string $direction2) : int
+    {
+        return array_search($direction1, self::ALL_DIRECTIONS) - array_search($direction2, self::ALL_DIRECTIONS);
+    }
+
     public function getWrappedLocationOnMap(Map $map, string $direction) : Location
     {
         return match ($direction) {

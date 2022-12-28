@@ -17,4 +17,3 @@ WolframAlpha is only necessary for day 21 part 2. If no AppID is configured, the
 - Day 12 part 2 is not automated and needs human interaction
 - Day 16 part 2 runs forever
 - Day 19 is missing due to trauma from day 16
-- Day 22 part 2 is missing (WIP)
